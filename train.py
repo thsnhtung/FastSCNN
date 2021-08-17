@@ -15,6 +15,7 @@ from utils.loss import MixSoftmaxCrossEntropyLoss, MixSoftmaxCrossEntropyOHEMLos
 from utils.lr_scheduler import LRScheduler
 from utils.metric import SegmentationMetric
 import torch.nn as nn
+from transform.Transform import MyTransform
 
 def parse_args():
     """Training Options for Segmentation Experiments"""

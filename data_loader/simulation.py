@@ -4,8 +4,14 @@ import random
 import numpy as np
 import torch
 import torch.utils.data as data
-import torchvision.transforms as transforms
 import cv2
+import os
+
+import sys
+sys.path.insert(0, r'C:\Users\Asus\Desktop\FastSCNN\transform')
+
+
+from Transform import *
 
 
 from PIL import Image, ImageOps, ImageFilter
@@ -30,17 +36,15 @@ class Simulation(data.Dataset):
     def __init__(self, root='', img_transforms=None, size = (160, 320), crop_top = False, **kwargs):
         super(Simulation, self).__init__()
         self.root = root
+        
+        self.COLORMAP2LABEL = colormap2label()                      #create label map
 
-        img_transforms = transforms.Compose([
-        #transforms.Resize(size),
-        transforms.ToTensor(),
-        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-        ])
+        img_transforms = MyTransform(labelMap = self.COLORMAP2LABEL )
 
         self.size = size
         self.img_transform = img_transforms
 
-        self.COLORMAP2LABEL = colormap2label()                      #create label map
+
 
         self.img_dir = str(os.path.join(self.root, 'image'))
         self.label_dir = str(os.path.join(self.root, 'label'))
@@ -64,15 +68,16 @@ class Simulation(data.Dataset):
     def __getitem__(self, index):
         img_file = os.path.join(self.img_dir, self.image_files[index])  
         img = Image.open(img_file)
-        img = img.crop((0,84,320, 180))
-        if self.img_transform is not None:
-            img = self.img_transform(img)
+        # img = img.crop((0,84,320, 180))
+
         
         label_file = os.path.join(self.label_dir, self.image_files[index])
-        label = np.asarray(Image.open(label_file).crop((0,84,320, 180))) 
+        label = Image.open(label_file)
+        #label = np.asarray(Image.open(label_file).crop((0,84,320, 180))) 
         #label = cv2.resize(label, (self.size[1], self.size[0]) , cv2.INTER_NEAREST)
-        label = self.label_indices(label, self.COLORMAP2LABEL)
-        label = torch.tensor(label)
+        #label = self.label_indices(label, self.COLORMAP2LABEL)
+        if self.img_transform is not None:
+            img, label = self.img_transform(img, label)
 
 
         if self.crop_top:
@@ -88,19 +93,22 @@ class Simulation(data.Dataset):
         """Number of categories."""
         return self.NUM_CLASS
 
-    def label_indices(self, colormap, colormap2label):
-        colormap = np.array(colormap)
-        colormap = colormap.astype(np.int32)
-        idx = ((colormap[:, :, 0] * 256 + colormap[:, :, 1]) * 256 +
-            colormap[:, :, 2])
-        img = colormap2label[idx]
-        return  img
 
 
 
 if __name__ == '__main__':
-    dir = r'C:\Users\Asus\Downloads\TestFastSCNN'
+    dir = r'C:\Users\Asus\Desktop\AI\SegmentData\FullData'
     dataset = Simulation(root = dir)
-    img, label = dataset[0]
+    img, label = dataset[100]
     print(img.size())
     print(label.size())
+
+
+    label = np.array(label)
+    # label = label.reshape((-1, 320, 3))
+    cv2.imshow("anh", np.array(label, dtype = np.uint8)* 255)
+
+    img = np.array(img)
+    img = img.reshape((-1, 320, 3))
+    cv2.imshow("img", np.array(img, dtype = np.uint8) * 255)
+    cv2.waitKey(0)
