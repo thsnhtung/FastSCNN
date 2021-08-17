@@ -83,8 +83,8 @@ class Trainer(object):
         data_kwargs = {'transform': input_transform, 'base_size': args.base_size, 'crop_size': args.crop_size}
         if args.dataset == 'simulation':
           print('here')
-          train_dataset = Simulation(root = args.data_dir)
-          val_dataset = Simulation(root = args.data_dir)
+          train_dataset = Simulation(root = args.data_dir, mode = 'train')
+          val_dataset = Simulation(root = args.data_dir, mode = 'valid')
         else:
           train_dataset = get_segmentation_dataset(args.dataset, split=args.train_split, mode='train', **data_kwargs)
           val_dataset = get_segmentation_dataset(args.dataset, split='val', mode='val', **data_kwargs)
@@ -161,7 +161,6 @@ class Trainer(object):
 
             if self.args.no_val:
                 # save every epoch
-
                 save_checkpoint(self.model, self.args, is_best=False, epoch= epoch)
             else:
                 self.validation(epoch)

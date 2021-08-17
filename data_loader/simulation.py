@@ -33,21 +33,26 @@ class Simulation(data.Dataset):
     NUM_CLASS = len(CLASSES)
 
 
-    def __init__(self, root='', img_transforms=None, size = (160, 320), crop_top = False, **kwargs):
+    def __init__(self, root='', img_transforms=None, size = (160, 320), crop_top = False, mode = 'train', **kwargs):
         super(Simulation, self).__init__()
         self.root = root
         
         self.COLORMAP2LABEL = colormap2label()                      #create label map
-
+        self.mode = mode
         img_transforms = MyTransform(labelMap = self.COLORMAP2LABEL )
 
         self.size = size
         self.img_transform = img_transforms
-
-
-
-        self.img_dir = str(os.path.join(self.root, 'image'))
-        self.label_dir = str(os.path.join(self.root, 'label'))
+        if self.mode == 'train':
+            dir = os.path.join(self.root, 'train')
+        elif self.mode == 'valid':
+            dir = os.path.join(self.root, 'valid')
+        elif self.mode == 'test':
+            dir = os.path.join(self.root, 'test')
+        else:
+            assert False, "Wrong mode"
+        self.img_dir = str(os.path.join(dir, 'image'))
+        self.label_dir = str(os.path.join(dir, 'label'))
         self.Check()               # check the integrity of dataset
 
         self.crop_top = crop_top

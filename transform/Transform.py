@@ -14,7 +14,6 @@ class RandomHorizontalFlip(object):
 
     def __call__(self, image, target):
         if random.random() < self.flip_prob:
-            print("flip")
             image = F.hflip(image)
             target = F.hflip(target)
         return image, target
@@ -24,10 +23,8 @@ class RandomRotate(object):
     def __init__(self, rotate_prob):
         self.rotate_prob = rotate_prob
     def __call__(self, image, target):
-        if random.random() > self.rotate_prob:
-            print("RandomRotate")
+        if random.random() > self.rotate_prob:    
             angle = random.randint(-10, 10)
-            print("angle: ", angle)
             image = F.rotate(image, angle)
             target = F.rotate(target, angle)
         return image, target
