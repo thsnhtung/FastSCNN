@@ -249,6 +249,7 @@ def get_fast_scnn(dataset='citys', pretrained=False, root='./weights', map_cpu=F
         'ade20k': 'ade',
         'coco': 'coco',
         'citys': 'citys',
+        'simulation':'simulation'
     }
 
     model = FastSCNN(2, **kwargs)

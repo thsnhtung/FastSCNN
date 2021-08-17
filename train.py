@@ -27,7 +27,7 @@ def parse_args():
     parser.add_argument('--data_dir', type=str, default='./',
                         help='Directory for input data')
 
-    parser.add_argument('--dataset', type=str, default='citys',
+    parser.add_argument('--dataset', type=str, default='simulation',
                         help='dataset name (default: citys)')
     parser.add_argument('--base-size', type=int, default=1024,
                         help='base image size')
@@ -82,7 +82,6 @@ class Trainer(object):
         # dataset and dataloader
         data_kwargs = {'transform': input_transform, 'base_size': args.base_size, 'crop_size': args.crop_size}
         if args.dataset == 'simulation':
-          print('here')
           train_dataset = Simulation(root = args.data_dir, mode = 'train')
           val_dataset = Simulation(root = args.data_dir, mode = 'valid')
         else:
